@@ -2,7 +2,8 @@
 close all;clear;clc;
 global Mw Z zLoop ZLoop bigM epsilon;
 
-um_goblue2
+% creates grid space and specifications
+um_goblue
 
 A = adj+eye(size(adj));
 n = length(A);

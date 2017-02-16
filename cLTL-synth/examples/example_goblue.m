@@ -23,7 +23,7 @@ epsilon=0;
 CA_flag=0;
 
 tic
-[Mw,WT,Z] = main_template(f,A,h,W0,Obs,CA_flag);
+[Mw,WT,Z,~] = cLTL_synth(f,A,h,W0,Obs,CA_flag);
 toc
 
 time = clock;

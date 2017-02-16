@@ -95,7 +95,7 @@ epsilon = 0;
 % 1=collision avoidence enforced, 0=no collision avoidence
 CA_flag = 1;
 
-[Mw, WT, Z, mytimes] = cLTL_synth(f,A,h,W0,Obs,CA_flag);
+[Mw, WT, Z] = cLTL_synth(f,A,h,W0,Obs,CA_flag);
 
 
 time = clock;

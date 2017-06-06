@@ -1,5 +1,5 @@
 function [x, u, Z, sol, zLoop] = main_template(...
-    formula, A, B, Px, Pu, h, X0, Obs, CA_flag)
+    formula, A, B, Px, Pu, h, X0, Obs, CA_flag, epsilon)
 % x(t+1) = A*x(t) + B*u(t)
 % A = dx*dx matrix
 % b = dx*du matrix
@@ -46,14 +46,17 @@ u = sdpvar(repmat(du,1,N),repmat(h,1,N),'full');
 fDyn = getDyn(A, B, X0, Px, Pu);
 
 % Obstacle Avoidence Constraint
-[fObs,zObs] = getObs(Obs);
+[fObs,zObs] = getObs(Obs, epsilon);
 
 % Loop constraint
 fLoop= getLoop();
 
 % Collision Avoidence Constraint ??
-% fCol = getCol();
-
+if CA_flag
+    [fCol, zCol] = getCol(epsilon);
+else 
+    fCol = [];
+end
 % Timing of other constraints
 toe = toc(tos);
 disp(['    Done with other constraints (',num2str(toe),') seconds'])
@@ -67,13 +70,10 @@ tltle=toc(tltls);
 disp(['    Done with LTL constraints (',num2str(tltle),') seconds'])
 
 % All Constraints
-F = [fInit, fDyn, fLoop, fLTL, fObs, phi==1];
+F = [fInit, fDyn, fLoop, fCol, fLTL, fObs, phi==1];
 %F = [fInit, fDyn, fLoop, fObs];
-% F = [fInit, fDyn, fLoop, fObs];
+%F = [fInit, fDyn, fLoop, fObs, x{1}(:,15) == zeros(6,1)];
 
-if CA_flag
-    F = [F fCol];
-end
 disp(['    Total number of optimization variables : ', num2str(length(depends(F)))]);
 
 % Solve the optimization problem

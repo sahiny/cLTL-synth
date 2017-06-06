@@ -2,13 +2,14 @@ clear all;
 close all;
 clc;
 
-global x u Z zLoop ZLoop bigM epsilon;
+global x u Z zLoop ZLoop bigM tau;
 bigM = 1000;
+tau = 1;
 % number of robots
 N = 10;
 
 % Time horizon
-h = 20;
+h = 50;
 
 % Initial condition
 X0 =[0.5*ones(1,N);
@@ -16,7 +17,7 @@ X0 =[0.5*ones(1,N);
 
 % Collision avoidence flag,
 % 1=collision avoidence enforced, 0=no collision avoidence
-CA_flag = 0;
+CA_flag = 1;
 
 % system parameters
 A = eye(2);
@@ -43,6 +44,12 @@ ap_cell = {};
 % Region E
 [ap_E, ap_cell] = AP([eye(2); -eye(2)],[10; 5; 0; 0], ap_cell);
 
+% Region F
+[ap_F1, ap_cell] = AP([eye(2); -eye(2)],[2; 2; 0; 0], ap_cell);
+[ap_F2, ap_cell] = AP([eye(2); -eye(2)],[2; 10; 0; -8], ap_cell);
+[ap_F3, ap_cell] = AP([eye(2); -eye(2)],[10; 10; -8; -8], ap_cell);
+
+
 % Obstacles
 Obs1 = Polytope([eye(2); -eye(2)], [8; 3; -6; -1]);
 Obs2 = Polytope([eye(2); -eye(2)], [7; 10; -3; -8]);
@@ -51,7 +58,7 @@ Obs = [Obs1, Obs2, Obs3];
 %%%%%%%%%%%
 
 % visualization
-if 0
+if 1
 figure(1);clf;hold on;
 plot(Polyhedron(Px.A,Px.b), 'color', 'white');
 plot(Polyhedron(ap_A.A,ap_A.b), 'color', 'gray');
@@ -60,12 +67,13 @@ plot(Polyhedron(ap_narrow.A,ap_narrow.b), 'color', 'gray');
 plot(Polyhedron(Obs(1).A,Obs(1).b), 'color', 'black');
 plot(Polyhedron(Obs(2).A,Obs(2).b), 'color', 'black');
 plot(Polyhedron(Obs(3).A,Obs(3).b), 'color', 'black');
+plot(Polyhedron(ap_F1.A,ap_F1.b), 'color', 'gray');
 hold off
 end
 % Specs
 
 %not too many robots in narrow passage way
-f1 = GG(Neg(TCP(ap_narrow,4))); 
+f1 = GG(Neg(TCP(ap_narrow,3))); 
 
 % surveil two regions by leaving them once in a while
 f2 = GF(TCP(ap_A, 5)); 
@@ -77,26 +85,26 @@ f5 = GF(Neg(TCP(ap_C, 1)));
 f6 = FG(Neg(TCP(ap_C, 4))); 
 
 % everyone cross the bridge once in a while
-f7 = TCP(GF(ap_narrow), 10);
+f7 = TCP(GF(ap_F1), 10);
 
-f = And(f1, f2, f3, f4, f5, f7);
-%f = And(f2, f3);
+f = And(f1, f2, f3, f4, f5, f6, f7);
+%f = And(f1, f2, f3, f4, f5);
+% radius of robots
+epsilon = [0.3 0.3]';
 
-
-
-[x, u, Z, sol, zLoop] = main_template(f, A, B, Px, Pu, h, X0, Obs, CA_flag);
+[x, u, Z, sol, zLoop] = main_template(f, A, B, Px, Pu, h, X0, Obs, CA_flag, epsilon);
 
 loopBegins = find(zLoop==1);
-% time = clock;
-% filename = ['./data/GOBLUE_' ...
-% num2str(time(1)) '_'... % Returns year as character
-% num2str(time(2)) '_'... % Returns month as character
-% num2str(time(3)) '_'... % Returns day as char
-% num2str(time(4)) 'h'... % returns hour as char..
-% num2str(time(5)) 'm'... %returns minute as char
-% ];
-% 
-% save(filename,'W','W','Wtotal','Wtotal','ZLoop','ZLoop','A','A','mygrid','mygrid', 'Z', 'Z','sol','sol');
+time = clock;
+filename = ['./data/GOBLUE_' ...
+num2str(time(1)) '_'... % Returns year as character
+num2str(time(2)) '_'... % Returns month as character
+num2str(time(3)) '_'... % Returns day as char
+num2str(time(4)) 'h'... % returns hour as char..
+num2str(time(5)) 'm'... %returns minute as char
+];
+
+%save(filename,'x','x','u','u','zLoop','zLoop','A','A','mygrid','mygrid', 'Z', 'Z','sol','sol');
 
 
 

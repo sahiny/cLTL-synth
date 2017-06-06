@@ -1,6 +1,6 @@
 function [fLTL,phi] = getLTL(formula,k)
 
-global x u Z zLoop ZLoop bigM epsilon;
+global x u Z zLoop ZLoop bigM epsilon tau;
 
 if strcmp(formula.type,'inner')
     switch formula.Op
@@ -32,7 +32,7 @@ if strcmp(formula.type,'inner')
 else
    switch formula.Op
         case 'TCP'
-            [fLTL,phi] = getTCP(formula,k);
+            [fLTL,phi] = getTCPTau(formula,k);
         case 'And'
             [fLTL,phi] = getAndOuter(formula,k);
         case 'Or'

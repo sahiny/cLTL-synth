@@ -1,4 +1,4 @@
-function [fObs,zObs] = getObs(Obs)
+function [fObs,zObs] = getObs(Obs, epsilon)
 % returns collision avoidance constraints
 global x bigM;
 
@@ -21,7 +21,7 @@ for n = 1:N
             ZP = binvar(length(P.b),1);
             zObs = [zObs; ZP];
             for r = 1:length(P.b)
-                fObs = [fObs, P.A(r,:)*xt >= P.b(r) + 0.01 - bigM*(1-ZP(r))];
+                fObs = [fObs, P.A(r,:)*xt >= P.b(r) + epsilon - bigM*(1-ZP(r))];
             end
             fObs = [fObs, sum(ZP)>=1];
         end

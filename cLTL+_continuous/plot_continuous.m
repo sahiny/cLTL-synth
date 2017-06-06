@@ -47,7 +47,7 @@ for t = 1:h
             plot(xx,yy,'o', 'color', cmap(n,:), ...
                     'markersize', 15, 'MarkerFaceColor', cmap(n,:))
         end
-        pause(.05);
+        pause(.01);
         hold off
     end
 end

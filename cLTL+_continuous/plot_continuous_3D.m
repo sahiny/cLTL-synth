@@ -2,7 +2,7 @@ function plot_continuous_3D(x,Z)
 h = size(x{1},2)-1;
 N = length(x);
 cmap = jet(N);
-fps = 5;
+fps = 3;
 
 % state constraints
 Px = Polytope([eye(3); -eye(3)], [10; 10; 10; 10; 10; 0]);
@@ -30,7 +30,8 @@ Obs = [Obs1, Obs2];
 for t = 1:h
     for tt = 1:fps+1
         figure(1);clf;hold on;
-        view(2)
+        subplot(2,2,1)
+        hold on;
         plot(Polyhedron(Px.A,Px.b), 'color', 'white', 'alpha', 0.1);
         plot(Polyhedron(ap1.A,ap1.b), 'color', 'green', 'alpha', 0.1);
         plot(Polyhedron(ap2.A,ap2.b), 'color', 'green', 'alpha', 0.1);
@@ -44,9 +45,9 @@ for t = 1:h
             plot3(xx,yy,zz, '.', 'color', cmap(n,:), ...
                     'markersize', 25, 'MarkerFaceColor', cmap(n,:))
         end
-view(2)
-figure(1);clf;hold on;
-        view(2)
+view(0,0)
+        subplot(2,2,2)
+        hold on
         plot(Polyhedron(Px.A,Px.b), 'color', 'white', 'alpha', 0.1);
         plot(Polyhedron(ap1.A,ap1.b), 'color', 'green', 'alpha', 0.1);
         plot(Polyhedron(ap2.A,ap2.b), 'color', 'green', 'alpha', 0.1);
@@ -60,8 +61,24 @@ figure(1);clf;hold on;
             plot3(xx,yy,zz, '.', 'color', cmap(n,:), ...
                     'markersize', 25, 'MarkerFaceColor', cmap(n,:))
         end
-view(2)
-        pause(.05);
+view(0,90)
+subplot(2,2,3)
+hold on;
+        plot(Polyhedron(Px.A,Px.b), 'color', 'white', 'alpha', 0.1);
+        plot(Polyhedron(ap1.A,ap1.b), 'color', 'green', 'alpha', 0.1);
+        plot(Polyhedron(ap2.A,ap2.b), 'color', 'green', 'alpha', 0.1);
+        plot(Polyhedron(ap3.A,ap3.b), 'color', 'green', 'alpha', 0.1);
+        plot(Polyhedron(Obs(1).A,Obs(1).b), 'color', 'black', 'alpha', 0.1);
+        plot(Polyhedron(Obs(2).A,Obs(2).b), 'color', 'black', 'alpha', 0.1);
+        for n = 1:N
+            xx = x{n}(1,t) * (fps+1-tt)/fps + x{n}(1,t+1) * (tt-1)/fps;
+            yy = x{n}(2,t) * (fps+1-tt)/fps + x{n}(2,t+1) * (tt-1)/fps;
+            zz = x{n}(3,t) * (fps+1-tt)/fps + x{n}(3,t+1) * (tt-1)/fps;
+            plot3(xx,yy,zz, '.', 'color', cmap(n,:), ...
+                    'markersize', 25, 'MarkerFaceColor', cmap(n,:))
+        end
+view(90,0)
+        pause(.01);
         
         hold off
     end

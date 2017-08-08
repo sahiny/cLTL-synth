@@ -1,8 +1,8 @@
 # cLTL+
 
 This Matlab implementation takes cLTL+ specifications, agent dynamics, environment as input and synthesizes individual trajectories for agents such that specifications are met.
-For more information on cLTL+ please refer to "Yunus Emre Sahin, Petter Nilsson, Necmiye Ozay, Synchronous and Asynchronous Multi-agent Coordination with cLTL+
-Constraints, CDC17"
+For more information on cLTL+ please refer to
+```Yunus Emre Sahin, Petter Nilsson, Necmiye Ozay, Synchronous and Asynchronous Multi-agent Coordination with cLTL+ Constraints, CDC17 ```
 
 ### Dependencies
 

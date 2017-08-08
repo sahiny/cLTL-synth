@@ -4,8 +4,8 @@ clc;
 addpath(genpath('../'))
 
 global x u Z zLoop ZLoop bigM tau;
-bigM = 1000;
-tau = 1;
+bigM = 100;
+tau = 0;
 % number of robots
 N = 10;
 
@@ -59,7 +59,8 @@ Obs = [Obs1, Obs2, Obs3];
 %%%%%%%%%%%
 
 % visualization
-if 1
+show_env = 0;
+if show_env
 figure(1);clf;hold on;
 plot(Polyhedron(Px.A,Px.b), 'color', 'white');
 plot(Polyhedron(ap_A.A,ap_A.b), 'color', 'gray');
@@ -71,8 +72,9 @@ plot(Polyhedron(Obs(3).A,Obs(3).b), 'color', 'black');
 plot(Polyhedron(ap_F1.A,ap_F1.b), 'color', 'gray');
 hold off
 end
-% Specs
 
+
+% Specs
 %not too many robots in narrow passage way
 f1 = GG(Neg(TCP(ap_narrow,3))); 
 
@@ -89,8 +91,8 @@ f6 = FG(Neg(TCP(ap_C, 4)));
 f7 = TCP(GF(ap_F1), 10);
 
 f = And(f1, f2, f3, f4, f5, f6, f7);
-%f = And(f1, f2, f3, f4, f5);
-% radius of robots
+
+% radius of robots (in x-y dimensions)
 epsilon = [0.3 0.3]';
 
 [x, u, Z, sol, zLoop] = main_template(f, A, B, Px, Pu, h, X0, Obs, CA_flag, epsilon);
@@ -105,9 +107,7 @@ num2str(time(4)) 'h'... % returns hour as char..
 num2str(time(5)) 'm'... %returns minute as char
 ];
 
-%save(filename,'x','x','u','u','zLoop','zLoop','A','A','mygrid','mygrid', 'Z', 'Z','sol','sol');
-
-
+save(filename);
 
 plot_continuous(x,Z);
 

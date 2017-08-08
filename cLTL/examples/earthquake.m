@@ -68,7 +68,6 @@ for i=1:length(state_labels);
 end
 
 % Total specs
-f = strcat('And(',f1,',',f2,',',f3,',',f4,',',f5,',',f6,')');
 f = strcat('And(',f1,',',f2,',',f3,',',f4,',',f5,',',f6,',',f7,')');
 
 % Adjacency matrix
@@ -77,14 +76,8 @@ A = adj;
 % Time horizon
 h = 40;
 
-% Random nitial condition
+% Random initial condition
 n = size(A,1);
-W0=zeros(n,1);
-for i=1:n
-    if ~Obs(i)
-        W0(i) = round(rand(1)*0.65);
-    end
-end
 W0 = [ones(10,1); zeros(n-10,1)];
 
 
@@ -107,9 +100,7 @@ num2str(time(4)) 'h'... % returns hour as char..
 num2str(time(5)) 'm'... %returns minute as char
 ];
 
-save(filename,'WT','WT','Mw','Mw','ZLoop','ZLoop','A','A','mygrid','mygrid', 'Z', 'Z');
-
-
+save(filename);
 
 grid_plot(filename);
 

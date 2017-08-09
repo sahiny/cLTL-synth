@@ -1,4 +1,4 @@
-# cLTL+_continuous
+# cLTL
 
 This Matlab implementation takes cLTL specifications, transition matrix, environment as input and synthesizes individual trajectories for agents such that specifications are met.
 For more information on cLTL+ please refer to

@@ -1,6 +1,16 @@
-function [fU,phiU] = getU(formula, args, k)
+function [fU,phi] = getU(formula, args, k)
 
-global Mw Z zLoop ZLoop bigM epsilon;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau;
+
+% number of agents
+N = length(W);
+% number of states
+I = size(W{1},1);
+% time horizon
+h = size(W{1},2)-1-tau;
+
+z = [];
+%fU = [];
 
 
 if length(args)~=2
@@ -9,7 +19,7 @@ if length(args)~=2
 end
 
 
-if k < length(Mw)
+if k < h
     
     % phi1
     [fU,phi1] = getLTL(args{1},k);
@@ -24,14 +34,15 @@ if k < length(Mw)
     
     % And(phi1_k, [[phi1 U phi2]]_k+1)
     formulaAnd = strcat('And(', ...
-        num2str(args{1}), '[',num2str(k),'],', ...
-                 formula, '[',num2str(k+1),'])');
-    zAnd = getZ(formulaAnd,-1);
-    fU = [fU, zAnd<=phi1, zAnd<=phiU2, zAnd>=phiU2+phi1-1];
+        num2str(args{1}), ',', ...
+                 formula, ')');
+    zAnd = getZ(formulaAnd,h-1,1);
+    fU = [fU, zAnd(k)<=phi1, zAnd(k)<=phiU2, zAnd(k)>=phiU2+phi1-1];
     
     % phiU_k = Or(phi2_k,zAnd)
-    phiU = getZ(formula,k);
-    fU = [fU, phiU>=phi2, phiU>=zAnd, phiU<=zAnd+phi2];
+    phiU = getZ(formula,h,1);
+    phi = phiU(k);
+    fU = [fU, phi>=phi2, phi>=zAnd(k), phi<=zAnd(k)+phi2];
     
 else
 
@@ -43,64 +54,64 @@ else
     fU = [fU, f2];
     
     % za = << phi1 U phi2 >>
-    za = [];
+    za_i = [];
     
     % zb_i = And(zLoop_i,za_i)
-    zb = [];
+    zb_i = [];
     
     % bigOr in (15)
     formulaOr = 'Or( ';
-    for i=1:k
+    za_i = getZ(strcat('~',formula),h,1);
+           formulaAnd = strcat('And(', ...
+                    'zLoop', ...
+        strcat('~',formula), ')');
+       zb_i = getZ(formulaAnd,h,1);
+    for i=1:h
        % za_i = << phi1 U phi2 >>_i 
-       za_i = getZ(strcat('~',formula),i);
-       za = [za;za_i];
-       
+       %za = [za;za_i];
        % zb_i = And(zLoop_i,za_i)
-       formulaAnd = strcat('And(', ...
-                    'zLoop', '[',num2str(i),'],', ...
-        strcat('~',formula), '[',num2str(i),'])');
-       zb_i = getZ(formulaAnd,-1);
-       zb = [zb;zb_i];
-       fU = [fU, zb(i)<=za(i), zb(i)<=zLoop(i), zb(i)>=za(i)+zLoop(i)-1];
+
+       %zb = [zb;zb_i];
+       fU = [fU, zb_i(i)<=za_i(i), zb_i(i)<=zLoop(i), zb_i(i)>=za_i(i)+zLoop(i)-1];
        
        formulaOr = strcat(formulaOr, formulaAnd, ',');
     
     end
     formulaOr = strcat(formulaOr,')');
     % bigOr, see eq (15) in paper
-    zOr = getZ(formulaOr,-1);
-    fU = [fU, zOr<=sum(zb), repmat(zOr,k,1)>=zb];
+    zOr = getZ(formulaOr,1,1);
+    fU = [fU, zOr<=sum(zb_i), repmat(zOr,h,1)>=zb_i];
     
     % second term in paranthesis (15)
     formulaAnd = strcat('And( ', ...
-        num2str(args{1}), '[',num2str(k),'], ', ...
-               formulaOr, '[-1]');
-    zAnd = getZ(formulaAnd,-1);
+        num2str(args{1}), ',', ...
+               formulaOr, ')');
+    zAnd = getZ(formulaAnd,1,1);
     fU = [fU, zAnd<=zOr, zAnd<=phi1, zAnd>=phi1+zOr-1];
     
     % finally (15)
-    phiU = getZ(formula,k);
-    fU = [fU, phiU<=zAnd+phi2, phiU>=phi2, phiU>=zAnd];
-    
-    % aux variables see (16)
-    for i=1:k-1
-       % second term in paranthesis (16)
+    phiU = getZ(formula,h,1);
+    phi = phiU(h);
+    fU = [fU, phi<=zAnd+phi2, phi>=phi2, phi>=zAnd];
+
+           % second term in paranthesis (16)
        formulaAnd = strcat('And( ', ...
-         num2str(args{1}), '[',num2str(i),'], ', ...
-      strcat('~',formula), '[', num2str(i+1),'])'); 
-  
-       zAnd = getZ(formulaAnd,-1);
-       phi1_i = getZ(args{1},i);
-       fU = [fU, zAnd<=za(i+1), zAnd<=phi1_i, zAnd>=za(i+1)+phi1_i-1];
+         num2str(args{1}),  ...
+      strcat('~',formula), ')'); 
+    zAnd = getZ(formulaAnd,h-1,1);
+    % aux variables see (16)
+    for i=1:h-1
+       phi1 = getZ(args{1},h,1);
+       fU = [fU, zAnd(i)<=za_i(i+1), zAnd(i)<=phi1(i), zAnd(i)>=za_i(i+1)+phi1(i)-1];
        
-        phi2_i = getZ(args{2},i);
-        fU = [fU, za(i)<=zAnd+phi2_i, za(i)>=phi2_i, za(i)>=zAnd];
+        phi2 = getZ(args{2},h,1);
+        fU = [fU, za_i(i)<=zAnd(i)+phi2(i), za_i(i)>=phi2(i), za_i(i)>=zAnd(i)];
         
     end
 
     % Last step
-    phi2_k = getZ(args{2},k);
-    fU = [fU, za(k)==phi2_k];
-    
+    phi2_k = getZ(args{2},h,1);
+    fU = [fU, za_i(h)==phi2(h)];
+
 end
     

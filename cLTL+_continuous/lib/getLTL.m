@@ -32,7 +32,7 @@ if strcmp(formula.type,'inner')
 else
    switch formula.Op
         case 'TCP'
-            [fLTL,phi] = getTCPTau(formula,k);
+            [fLTL,phi] = getTCPTau2(formula,k);
         case 'And'
             [fLTL,phi] = getAndOuter(formula,k);
         case 'Or'

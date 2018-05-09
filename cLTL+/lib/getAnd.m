@@ -1,13 +1,13 @@
 function [fAnd,phi] = getAnd(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 
 % number of agents
 N = length(W);
 % number of states
 I = size(W{1},1);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
 
 % m*N binvar: a binary variable for each argument and agent 
 z = [];

@@ -1,11 +1,12 @@
 clear;
 close all;
 clc;
+addpath(genpath('../'))
 
 global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 
 % Time horizon
-h = 45;
+h = 35;
 % robustness number
 epsilon = 0;
 tau = 2;
@@ -44,7 +45,7 @@ room3 = num2str(Room3);
 mygrid(1:2,1:2) = 0.2;
 mygrid(1:2,14:15) = 0.2;
 mygrid(7:8,1:2) = 0.2;
-%mygrid(9:10,9:10) = 0.2;
+mygrid(7:8,14:15) = 0.2;
 state_labels = mygrid(:);
 
 CS = find(state_labels(:)==.2)';
@@ -59,19 +60,19 @@ pass_ends = [23,73,Pass];
 
 % spec is the conjunction of the following
 Obs = state_labels(:)==0;                   %avoid obstacles
-f1 = strcat('GG(Neg(TP([',pass,'],[2])))');             %not too many robots in narrow passage way
-f1 = strcat('GG(TP([',num2str(setdiff(1:100,Pass)),'],[6]))');             %not too many robots in narrow passage way
+f1 = strcat('GG(Neg(TP([',pass,'],[4])))');             %not too many robots in narrow passage way
+f1 = strcat('GG(TP([',num2str(setdiff(1:prod(grid_size),Pass)),'],[6]))');             %not too many robots in narrow passage way
 
 % surveil two regions by leaving them once in a while
-f2 = strcat('GF(TP([',num2str(Room1),'],[5]))');        % GF([0.2 labels, >=5])
-f3 = strcat('GF(TP([',num2str(Room2),'],[5]))');        % GF([0.8 labels, >=5])        
+f2 = strcat('GF(TP([',num2str(Room1),'],[4]))');        % GF([0.2 labels, >=5])
+f3 = strcat('GF(TP([',num2str(Room2),'],[4]))');        % GF([0.8 labels, >=5])        
 f4 = strcat('GF(Neg(TP([',num2str(Room1),'],[1])))');   % GF([0.2 labels, <=0])
 f5 = strcat('GF(Neg(TP([',num2str(Room2),'],[1])))');   % GF([0.8 labels, <=0])
 f6 = strcat('FG(Neg(TP([',num2str(Room3),'],[2])))');   % FG([1 labels, <= 1]) at steady state at most one robot is left in the lower part
 
-f4 = strcat('GF(TP([',num2str(setdiff(1:100,Room1)),'],[8]))');   % GF([0.2 labels, <=0])
-f5 = strcat('GF(TP([',num2str(setdiff(1:100,Room2)),'],[8]))');   % GF([0.8 labels, <=0])
-f6 = strcat('FG(TP([',num2str(setdiff(1:100,Room3)),'],[6]))'); 
+f4 = strcat('GF(TP([',num2str(setdiff(1:prod(grid_size),Room1)),'],[8]))');   % GF([0.2 labels, <=0])
+f5 = strcat('GF(TP([',num2str(setdiff(1:prod(grid_size),Room2)),'],[8]))');   % GF([0.8 labels, <=0])
+f6 = strcat('FG(TP([',num2str(setdiff(1:prod(grid_size),Room3)),'],[6]))'); 
 
 %f7 = strcat('U(Neg([',num2str([pass_ends,1]),']),And([',num2str([72 74 1]),'],[',num2str([22 24 1]),']))');
 f7 = strcat('TP(GFI([', num2str(CS), ']),[8])');

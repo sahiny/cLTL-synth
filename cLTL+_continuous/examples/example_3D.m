@@ -5,11 +5,20 @@ addpath(genpath('../'))
 
 global x u Z zLoop ZLoop bigM epsilon;
 bigM = 1000;
+% sampling time
+dt = 1;
+
 % number of robots
-N = 5;
+N = 10;
 
 % Time horizon
-h = 40;
+h = 60;
+
+% Time robustness
+tau = 0;
+
+% robot diameter
+col_radius = 0;
 
 % Initial condition
 X0 =[0.5*ones(1,N);
@@ -22,7 +31,7 @@ CA_flag = 0;
 
 % system parameters
 A = eye(3);
-B = eye(3);
+B = dt*eye(3);
 
 % state constraints
 Px = Polytope([eye(3); -eye(3)], [10; 10; 10; 10; 10; 0]);
@@ -59,27 +68,27 @@ end
 % Specs
 
 % surveil two regions by leaving them once in a while
-f1 = GF(TCP(ap1, 5)); 
-f2 = GF(TCP(ap2, 5)); 
-f3 = GF(TCP(ap3, 5)); 
+f1 = GF(TCP(ap1, N)); 
+f2 = GF(TCP(ap2, N)); 
+f3 = GF(TCP(ap3, N)); 
 %f = And(f1, f2, f3, f4, f5, f7);
 f = And(f1,f2, f3);
 
 
 
-[x, u, Z, sol, zLoop] = main_template(f, A, B, Px, Pu, h, X0, Obs, CA_flag);
+[x, u, Z, sol, zLoop] = main_template(f, A, B, Px, Pu, h, X0, Obs, CA_flag, col_radius, tau);
 
 loopBegins = find(zLoop==1);
-% time = clock;
-% filename = ['./data/GOBLUE_' ...
-% num2str(time(1)) '_'... % Returns year as character
-% num2str(time(2)) '_'... % Returns month as character
-% num2str(time(3)) '_'... % Returns day as char
-% num2str(time(4)) 'h'... % returns hour as char..
-% num2str(time(5)) 'm'... %returns minute as char
-% ];
-% 
-% save(filename,'W','W','Wtotal','Wtotal','ZLoop','ZLoop','A','A','mygrid','mygrid', 'Z', 'Z','sol','sol');
+time = clock;
+filename = ['./GOBLUE_' ...
+num2str(time(1)) '_'... % Returns year as character
+num2str(time(2)) '_'... % Returns month as character
+num2str(time(3)) '_'... % Returns day as char
+num2str(time(4)) 'h'... % returns hour as char..
+num2str(time(5)) 'm'... %returns minute as char
+];
+
+save(filename);
 
 
 

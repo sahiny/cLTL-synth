@@ -1,13 +1,13 @@
 function [fTCP,phi] = getTCPTau(formula, k)
 
-global x Z zLoop ZLoop bigM tau;
+global u x Z zLoop ZLoop bigM tau;
 
 assert(strcmp(formula.Op, 'TCP'), 'tcp required');
 
 % number of agents
 N = length(x);
 % time horizon
-h = size(x{1},2)-1;
+h = size(u{1},2)-tau;
 
 
 if k==1 || tau ==0
@@ -18,7 +18,7 @@ else
     [fTCP, zTilde] = getLTL(formula.phi, k);
 
     for t = 1:tau
-        if t+k <= h
+        if t+k <= h+tau
             % If t+k <= h no need to loop around
             ztilde = getZ(formula.phi.formula, t+k, N);
             zTilde = [zTilde; ztilde];

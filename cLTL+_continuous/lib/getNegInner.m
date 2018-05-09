@@ -4,8 +4,6 @@ global x Z zLoop ZLoop bigM;
 
 % number of agents
 N = length(x);
-% time horizon
-h = size(x{1},2)-1;
 
 % number of arguments
 assert(length(formula.args)==1, 'Neg takes 1 argument');

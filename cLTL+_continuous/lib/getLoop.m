@@ -1,13 +1,13 @@
 function fLoop= getLoop()
 % returns loop constraints
-global x bigM zLoop ZLoop;
+global u x bigM zLoop ZLoop tau;
 
 % number of agents
 N = length(x);
 % number of states
 dx = size(x{1},1);
 % time horizon
-h = size(x{1},2)-1;
+h = size(u{1},2);
 
 % Loop variables
     % zLoop(i)=1 where loop starts
@@ -17,10 +17,12 @@ h = size(x{1},2)-1;
 % Loop constraints
 fLoop = sum(zLoop)==1;
 
-for t = 1:h
-    for n = 1:N
-        fLoop = [fLoop, x{n}(:,h+1) <= x{n}(:,t) + bigM*(1-zLoop(t))*ones(dx,1)];
-        fLoop = [fLoop, x{n}(:,h+1) >= x{n}(:,t) - bigM*(1-zLoop(t))*ones(dx,1)];
+for n = 1:N
+    for k = 0:tau
+        for t = k+1:h
+            fLoop = [fLoop, x{n}(:,h+1+k) <= x{n}(:,t) + bigM*(1-zLoop(t-k))];%*ones(dx,1)];
+            fLoop = [fLoop, x{n}(:,h+1+k) >= x{n}(:,t) - bigM*(1-zLoop(t-k))*ones(dx,1)];
+        end
     end
 end
 

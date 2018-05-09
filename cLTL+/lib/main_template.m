@@ -26,7 +26,7 @@ bigM = N+1;
 I = length(A);
 
 % Control input
-W = binvar(repmat(I,1,N),repmat(h+1,1,N),'full');
+W = binvar(repmat(I,1,N),repmat(h+1+tau,1,N),'full');
 
 if N == 1
      W = {W};
@@ -47,7 +47,11 @@ fDyn = getDyn(A,CA_flag);
 fLoop= getLoop();
 
 % Collision Avoidence Constraint
-fCol = getCol();
+if CA_flag ==1
+    fCol = getColTau();
+else
+    fCol = [];
+end
 
 % Timing of other constraints
 toe = toc(tos);
@@ -73,8 +77,9 @@ disp(['    Total number of optimization variables : ', num2str(length(depends(F)
 % Solve the optimization problem
 %H = -epsilon; % maximize epsilon
 options = sdpsettings('verbose',8,'solver','gurobi');
-options.gurobi.Heuristics = 0.8;
+options.gurobi.Heuristics = 0.5;
 options.gurobi.MIPFocus = 1;
+options.gurobi.Symmetry = 2;
 disp('Solving MILP...')
 tms=tic;
 sol = optimize(F,[],options);
@@ -109,9 +114,10 @@ if sol.problem == 0
     LoopBegins = find(zLoop(:)==1);
 else
      W=0;W=0;WT=0;ZLoop=0;zLoop=0;LoopBegins=0;
-     sol.info
-     yalmiperror(sol.problem)
-     assert(0,'## No feasible solutions found! ##');
+     sol.solvertime = -1;
+     %sol.info
+     %yalmiperror(sol.problem)
+     %assert(0,'## No feasible solutions found! ##');
 end
 
 ttotal = toc(tos);

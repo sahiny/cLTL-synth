@@ -1,11 +1,11 @@
 function [fOr,phi] = getOrI(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 
 % number of agents
 N = length(W);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
 
 % m*N binvar: a binary variable for each argument and agent 
 z = [];
@@ -36,9 +36,9 @@ end
 
 if m > 1
     % a binary variable for each agent
-    phi2 = getZ(formula,h,N);
+    phi = getZ(formula,h,N);
     % Robust version
-    phi = getZ(strcat('Robust(', formula, ')'),h,N);    % disjunction constraint
+    %phi = getZ(strcat('Robust(', formula, ')'),h,N);    % disjunction constraint
     for n = 1:N
         fOr = [fOr, repmat(phi(k,n),m,1)>=z(:,n), phi(k,n)<=+sum(z(:,n))];
     end

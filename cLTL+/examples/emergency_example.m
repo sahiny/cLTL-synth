@@ -1,16 +1,17 @@
-clear;
-close all;
-clc;
+% clear;
+% close all;
+% %clc;
+
+function sol = emergency_example(N,h,tau,CA_flag)
+global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 addpath(genpath('../'))
 
-global W Wtotal Z zLoop ZLoop bigM epsilon tau;
-
 % Time horizon
-h = 40;
+%h = 30;
 % robustness number
 epsilon = 0;
-tau = 0;
-
+%tau = mytau;
+%N = 10;
 % define a gridworld
 grid_size = [10, 10];
 mygrid = ones(grid_size);
@@ -54,28 +55,28 @@ CS = num2str(CS);
 % visualization
 vis = zeros(size(mygrid)+2);
 vis(2:end-1,2:end-1)=mygrid;
-imshow(kron(vis,ones(25,25)))
+%imshow(kron(vis,ones(25,25)))
 
 pass_ends = [23,73,Pass];
 
 % spec is the conjunction of the following
 Obs = state_labels(:)==0;                   %avoid obstacles
 f1 = strcat('GG(Neg(TP([',pass,'],[3])))');             %not too many robots in narrow passage way
-f1 = strcat('GG(TP([',num2str(setdiff(1:100,Pass)),'],[8]))');             %not too many robots in narrow passage way
+f1 = strcat('GG(TP([',num2str(setdiff(1:100,Pass)),'],[',num2str(N-2),']))');             %not too many robots in narrow passage way
 
 % surveil two regions by leaving them once in a while
-f2 = strcat('GF(TP([',num2str(Room1),'],[5]))');        % GF([0.2 labels, >=5])
-f3 = strcat('GF(TP([',num2str(Room2),'],[5]))');        % GF([0.8 labels, >=5])        
+f2 = strcat('GF(TP([',num2str(Room1),'],[',num2str(N/2),']))');        % GF([0.2 labels, >=5])
+f3 = strcat('GF(TP([',num2str(Room2),'],[',num2str(N/2),']))');        % GF([0.8 labels, >=5])        
 f4 = strcat('GF(Neg(TP([',num2str(Room1),'],[1])))');   % GF([0.2 labels, <=0])
 f5 = strcat('GF(Neg(TP([',num2str(Room2),'],[1])))');   % GF([0.8 labels, <=0])
 f6 = strcat('FG(Neg(TP([',num2str(Room3),'],[2])))');   % FG([1 labels, <= 1]) at steady state at most one robot is left in the lower part
 
-f4 = strcat('GF(TP([',num2str(setdiff(1:100,Room1)),'],[10]))');   % GF([0.2 labels, <=0])
-f5 = strcat('GF(TP([',num2str(setdiff(1:100,Room2)),'],[10]))');   % GF([0.8 labels, <=0])
-f6 = strcat('FG(TP([',num2str(setdiff(1:100,Room3)),'],[8]))'); 
+f4 = strcat('GF(TP([',num2str(setdiff(1:100,Room1)),'],[',num2str(N),']))');   % GF([0.2 labels, <=0])
+f5 = strcat('GF(TP([',num2str(setdiff(1:100,Room2)),'],[',num2str(N),']))');   % GF([0.8 labels, <=0])
+f6 = strcat('FG(TP([',num2str(setdiff(1:100,Room3)),'],[',num2str(N-2),']))'); 
 
 %f7 = strcat('U(Neg([',num2str([pass_ends,1]),']),And([',num2str([72 74 1]),'],[',num2str([22 24 1]),']))');
-f7 = strcat('TP(GFI([', num2str(CS), ']),[10])');
+f7 = strcat('TP(GFI([', num2str(CS), ']),[',num2str(N),'])');
 %adj = zeros(prod(size(grid)));
 adj = eye(numel(mygrid)); %allow self-transition
 
@@ -114,33 +115,36 @@ for i=1:n
         W0(i) = round(rand(1)*0.65);
     end
 end
-W0 = [ones(5,1); ones(5,1); zeros(n-10,1)];
+W0 = [ones(N,1); zeros(n-N,1)];
 
 
 
 % Collision avoidence flag,
 % 1=collision avoidence enforced, 0=no collision avoidence
-CA_flag = 0;
+%CA_flag = 0;
 
 [W, Wtotal, Z, mytimes, sol] = main_template(f,A,h,W0,Obs,CA_flag);
 
 
 time = clock;
-filename = ['./data/GOBLUE_' ...
-num2str(h) 'horizon_'...
-num2str(tau) 'tau_'...
-num2str(time(1)) '_'... % Returns year as character
-num2str(time(2)) '_'... % Returns month as character
-num2str(time(3)) '_'... % Returns day as char
-num2str(time(4)) 'h'... % returns hour as char..
-num2str(time(5)) 'm'... %returns minute as char
+filename = [strcat('./Journal_data/emergency_' ,...
+'N', num2str(N), '_', ...
+'h', num2str(h), '_', ...
+'tau', num2str(tau), '_', ...
+'CA', num2str(CA_flag), '_', ...
+num2str(time(1)), '_',... % Returns year as character
+num2str(time(2)), '_',... % Returns month as character
+num2str(time(3)), '_',... % Returns day as char
+num2str(time(4)), 'h',... % returns hour as char..
+num2str(time(5)), 'm')... %returns minute as char
 ];
 
-save(filename,'W','W','Wtotal','Wtotal','ZLoop','ZLoop','A','A','mygrid','mygrid', 'Z', 'Z','sol','sol');
+save(filename);
 
 
 
-grid_plot(filename);
+%grid_plot(filename);
 
 
 
+end

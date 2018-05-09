@@ -5,7 +5,7 @@ global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 % number of agents
 N = length(W);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
 
 % m*N binvar: a binary variable for each argument and agent 
 z = [];

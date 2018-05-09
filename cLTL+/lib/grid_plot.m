@@ -20,8 +20,8 @@ time_to_control_pos = @(time) (time<=k+1)*(time-1) + (time>k+1)*(loopBegins + mo
 
 
 % Return coordinates in a grid world
-ind_to_pos_x = @(ind) (1+floor((ind-1)/8));
-ind_to_pos_y = @(ind) (1+mod((ind-1),8));
+ind_to_pos_x = @(ind) (1+floor((ind-1)/10));
+ind_to_pos_y = @(ind) (1+mod((ind-1),10));
 
 I = size(A,2);  % num of states
 N = length(W);   % num of agents
@@ -56,23 +56,22 @@ end
 
 clf; 
 set(gca, 'LooseInset', get(gca,'TightInset'))
-
 % define a gridworld
-grid_size = [8, 15];
+grid_size = [10, 10];
 mygrid = ones(grid_size);
 
-mygrid(1:4, 1:5) = 0.8;
-mygrid(1:4, 11:15) = 0.6;
+mygrid(1:5, 1:5) = 0.8;
+mygrid(1:5, 6:10) = 0.6;
 
 % narrow passage
-% mygrid(2, 6:8) = 0.4;
-% mygrid(3, 8:10) = 0.4;
-mygrid(2:3, 6:10) = 0.4;
+mygrid(3, 4:7) = 0.4;
+
 
 % Obstacles
-mygrid([1,4], 6:10) = 0;
-% mygrid([2,4], [4,7]) = 0;
-mygrid(6:7, 13:14) = 0;
+mygrid([1:2,4:5], 5:6) = 0;
+mygrid([2,4], [4,7]) = 0;
+%mygrid([1:2,4:5], 4:7) = 0;
+mygrid([8,9], [7,8]) = 0;
 
 %%%%%%%%%%%
 
@@ -89,32 +88,33 @@ room3 = num2str(Room3);
 
 % charging station
 mygrid(1:2,1:2) = 0.2;
-mygrid(1:2,14:15) = 0.2;
-mygrid(7:8,1:2) = 0.2;
+mygrid(1:2,9:10) = 0.2;
+mygrid(9:10,1:2) = 0.2;
 %mygrid(9:10,9:10) = 0.2;
 state_labels = mygrid(:);
 
 CS = find(state_labels(:)==.2)';
 CS = num2str(CS);
 
-
+% visualization
 vis = zeros(size(mygrid)+2);
 vis(2:end-1,2:end-1)=mygrid;
 
 %
 % T = [1 6 10 11 12 20 33 41];%
 T= [1 9 10 13 14  15 17 20 21 22 23 31];
-T = 1:40;%[1 2 3 6 7 8 14 15 16 20 30 31];
+T = 1:35;
+T = [1:3 6 11:13 20:22 24 36];
 cmap = jet(N);
 pos_diff = [[0., 0.]; [0.3,0.3]; [0.3,-0.3]; [-0.3,-0.3]; [-0.3,0.3]];
 
 axis off
-ha = tight_subplot(4,10, [0.05 0.01], [0.01 0.04], 0.01);
+ha = tight_subplot(2,6, [0.05 0.01], [0.01 0.04], 0.01);
 for i=1:length(T)
 	axes(ha(i))
-	hold on; xlim([0.5, 15.5]); ylim([0.5, 8.5])
-	imshow(kron(mygrid,ones(25,25)), 'xdata', [0.5,15.5], 'ydata', [0.5,8.5])
-	rectangle('position',[0.5 0.5 15 8],'LineWidth',2);
+	hold on; xlim([0.5, 10.5]); ylim([0.5, 10.5])
+	imshow(kron(mygrid,ones(25,25)), 'xdata', [0.5,10.5], 'ydata', [0.5,10.5])
+	rectangle('position',[0.5 0.5 10 10],'LineWidth',2);
 % 	if i == loopBegins || i == length(ZLoop)+1
 %         	rectangle('position',[0.5 0.5 10 10],'LineWidth',2,'EdgeColor','r');
 %     end

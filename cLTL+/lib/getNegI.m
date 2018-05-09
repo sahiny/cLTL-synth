@@ -1,6 +1,6 @@
 function [fNeg,phi] = getNegI(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 
 if length(args)>1
     disp('Negation takes a single argument');
@@ -10,7 +10,7 @@ end
 % number of agents
 N = length(W);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
 
 % Constraints
 fNeg = [];

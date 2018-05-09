@@ -1,6 +1,6 @@
 function [fOr,phi] = getOr(formula,args,k)
 
-global Mw Z zLoop ZLoop bigM epsilon;
+global Mw Z zLoop ZLoop bigM epsilon tau;
 
 % a binary variable for each argument
 z = [];

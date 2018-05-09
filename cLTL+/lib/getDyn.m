@@ -1,16 +1,16 @@
 function fDyn = getDyn(A,CA_flag)
 % returns dynamical constraints
-global W;
+global W tau;
 % number of agents
 N = length(W);
 % number of states
 I = size(W{1},1);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
 
 fDyn = [];
 for n = 1:N
-    fDyn = [fDyn, sum(W{n}) == ones(1,h+1)];
+    fDyn = [fDyn, sum(W{n}) == ones(1,h+1+tau)];
     others = find([1:N]~=n);
     for i = 2:h+1
         wnext = W{n}(:,i);

@@ -2,14 +2,14 @@ function [fGFI,phi] = getGFInner(formula, k)
 
 assert(length(formula.args)==1, 'GF takes a single argument');
 
-global x Z ZLoop;
+global u x Z ZLoop tau;
 
 % number of agents
 N = length(x);
 % number of states
 dx = size(x{1},1);
 % time horizon
-h = size(x{1},2)-1;
+h = size(u{1},2);
 
 z = [];
 fGFI = [];

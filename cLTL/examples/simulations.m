@@ -1,4 +1,5 @@
 clear all;close all;clc;
+addpath(genpath('../'));
 time = clock;
 filename = ['simResults' ...
 num2str(time(1)) '_'... % Returns year as character
@@ -8,71 +9,24 @@ num2str(time(4)) 'h'... % returns hour as char..
 num2str(time(5)) 'm'... %returns minute as char
 ];
 
-numTrial = 10;
+numTrial = 5;
 edgeprob = (2/3);
 
-numAgents = [20, 100, 500, 1000];
+numAgents = [20, 50, 500];
 %numAgents =[];
 TAgents = cell(5,length(numAgents));
 
 numStates = [100, 200];%numStates=[];
 TStates = cell(5,length(numStates));
 
-timeHorizon = [20,50,100, 200];
+timeHorizon = [20,40,60];
 Th = cell(5,length(timeHorizon));
 
-disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp(' ...................Changing number of States........................')
-disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-
-nAgent=20;
-h=20;
-
-for i=1:length(numStates)
-    disp(['--------------------- #States............................',num2str(numStates(i)),]);
-    ti = tic;
-    nState = numStates(i);
-       S = randperm(nState);
-       S1 = S(1:nState/2);
-       S2 = S(nState/2+1:end);
-       G = S(datasample(S,3*nState/10));
-       G1 = G(1:nState/10);
-       G2 = G(nState/10+1:2*nState/10);
-       G3 = G(2*nState/10+1:3*nState/10);
-       f1 = strcat('F(G([',num2str(S2),',',num2str(nAgent/2),']))');
-       fg1 = strcat('G(F([',num2str(G1),',',num2str(nAgent/3),']))');
-       fg2 = strcat('G(F([',num2str(G2),',',num2str(nAgent/3),']))');
-       fg3 = strcat('G(F([',num2str(G3),',',num2str(nAgent/3),']))');
-       f = strcat('And(',f1,',',fg1,',',fg2,',',fg3,')');
-       Obs = ones(nState,1);
-       Obs = Obs(:) == 0;
-       CA_flag=0;
-       te=0;
-    for j=1:numTrial
-       clear Mw Z zLoop ZLoop bigM epsilon;
-       global Mw Z zLoop ZLoop bigM epsilon;
-       epsilon=0;
-       tj = tic;
-       disp(['----- #Trial................................',num2str(j)]);
-       A = round(edgeprob*rand(nState));
-       W0S1 = diff([0,sort(randperm(nAgent+nState/2-1,nState/2-1)),nAgent+nState/2])-ones(1,nState/2);
-       W0 = zeros(nState,1);
-       W0(S1) = W0S1';
-       [~,~,~,mytimes] = main_template(f,A,h,W0,Obs,CA_flag);
-       TStates{i,j} = mytimes;
-       disp(['Time spent in main function: ', num2str(mytimes(1)) ,' seconds: (',num2str(mytimes(2:end)),')'])
-       te = toc(tj);
-       disp(['Time spent in trial #',num2str(j) ,':  ',num2str(te),' seconds']);
-           save(filename,'TAgents','TAgents','TStates','TStates','Th','Th');    
-    end
-    te = te + toc(ti);
-       disp(['Avg Time spent in ', num2str(numTrial),' trial(s): ',num2str(te/numTrial), ' seconds']);
-end
 
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp('...................Changing number of Agents........................')
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-h=20;
+h=60;
 nState=100;
 S = randperm(nState);
 S1 = S(1:nState/2);
@@ -89,6 +43,7 @@ for i=1:length(numAgents)
     ti=tic;
     disp(['#################### Agents............................',num2str(numAgents(i)),]);
        nAgent = numAgents(i);
+       nAgent = 10;
        f1 = strcat('F(G([',num2str(S2),',',num2str(nAgent/2),']))');
        fg1 = strcat('G(F([',num2str(G1),',',num2str(round(nAgent/5)),']))');
        fg2 = strcat('G(F([',num2str(G2),',',num2str(round(nAgent/5)),']))');
@@ -105,7 +60,7 @@ for i=1:length(numAgents)
        W0S1 = diff([0,sort(randperm(nAgent+nState/2-1,nState/2-1)),nAgent+nState/2])-ones(1,nState/2);
        W0 = zeros(nState,1);
        W0(S1) = W0S1';
-       [~,~,~,mytimes] = main_template(f,A,h,W0,Obs,CA_flag);
+       [~,~,~,mytimes] = cLTL_synth(f,A,h,W0,Obs,CA_flag);
        TAgents{i,j} = mytimes;
        disp(['Time spent in main function: ', num2str(mytimes(1)) ,' seconds: (',num2str(mytimes(2:end)),')'])
        te = toc(tj);
@@ -170,7 +125,7 @@ for i=1:length(timeHorizon)
        W0S1 = diff([0,sort(randperm(nAgent+nState/2-1,nState/2-1)),nAgent+nState/2])-ones(1,nState/2);
        W0 = zeros(nState,1);
        W0(S1) = W0S1';
-       [~,~,~,mytimes] = main_template(f,A,h,W0,Obs,CA_flag);
+       [~,~,~,mytimes] = cLTL_synth(f,A,h,W0,Obs,CA_flag);
        Th{i,j} = mytimes;
        disp(['Time spent in main function: ', num2str(mytimes(1)) ,' seconds: (',num2str(mytimes(2:end)),')'])
        te = toc(tj);
@@ -180,6 +135,59 @@ for i=1:length(timeHorizon)
        disp(['Time elapsed in ', num2str(numTrial),' trial(s): ',num2str(te/numTrial), ' seconds']);
     save(filename,'TAgents','TAgents','TStates','TStates','Th','Th');    
 end
+
+
+
+
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp(' ...................Changing number of States........................')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+
+nAgent=20;
+h=20;
+
+for i=1:length(numStates)
+    disp(['--------------------- #States............................',num2str(numStates(i)),]);
+    ti = tic;
+    nState = numStates(i);
+       S = randperm(nState);
+       S1 = S(1:nState/2);
+       S2 = S(nState/2+1:end);
+       G = S(datasample(S,3*nState/10));
+       G1 = G(1:nState/10);
+       G2 = G(nState/10+1:2*nState/10);
+       G3 = G(2*nState/10+1:3*nState/10);
+       f1 = strcat('F(G([',num2str(S2),',',num2str(nAgent/2),']))');
+       fg1 = strcat('G(F([',num2str(G1),',',num2str(nAgent/3),']))');
+       fg2 = strcat('G(F([',num2str(G2),',',num2str(nAgent/3),']))');
+       fg3 = strcat('G(F([',num2str(G3),',',num2str(nAgent/3),']))');
+       f = strcat('And(',f1,',',fg1,',',fg2,',',fg3,')');
+       Obs = ones(nState,1);
+       Obs = Obs(:) == 0;
+       CA_flag=0;
+       te=0;
+    for j=1:numTrial
+       clear Mw Z zLoop ZLoop bigM epsilon;
+       global Mw Z zLoop ZLoop bigM epsilon;
+       epsilon=0;
+       tj = tic;
+       disp(['----- #Trial................................',num2str(j)]);
+       A = round(edgeprob*rand(nState));
+       W0S1 = diff([0,sort(randperm(nAgent+nState/2-1,nState/2-1)),nAgent+nState/2])-ones(1,nState/2);
+       W0 = zeros(nState,1);
+       W0(S1) = W0S1';
+       [~,~,~,mytimes] = cLTL_synth(f,A,h,W0,Obs,CA_flag);
+       TStates{i,j} = mytimes;
+       disp(['Time spent in main function: ', num2str(mytimes(1)) ,' seconds: (',num2str(mytimes(2:end)),')'])
+       te = toc(tj);
+       disp(['Time spent in trial #',num2str(j) ,':  ',num2str(te),' seconds']);
+           save(filename,'TAgents','TAgents','TStates','TStates','Th','Th');    
+    end
+    te = te + toc(ti);
+       disp(['Avg Time spent in ', num2str(numTrial),' trial(s): ',num2str(te/numTrial), ' seconds']);
+end
+
+
 
 
 pause;

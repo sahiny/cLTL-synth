@@ -1,6 +1,6 @@
 function [fNeg,phi] = getNeg(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 
 if length(args)>1
     disp('Negation takes a single argument');
@@ -12,7 +12,7 @@ N = length(W);
 % number of states
 I = size(W{1},1);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
 
 % Get its constraints
 [fNeg,z] = getLTL(args{1},k);

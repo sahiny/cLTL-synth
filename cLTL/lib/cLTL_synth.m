@@ -11,7 +11,7 @@ bigM = sum(W0)+1;
 I = length(A);
 
 % Indices of 0's of adjacency matrix
-A0 = A(:)==0;
+A0 = find(A==0);
 A1 = A(:)==1;
 % Control input
 Mw = intvar(repmat(I,1,h),repmat(I,1,h),'full');

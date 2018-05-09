@@ -1,13 +1,13 @@
 function [fGG,phi] = getGGOuter(formula, k)
 
-global x Z;
+global u x Z tau;
 
 % number of agents
 N = length(x);
 % number of states
 dx = size(x{1},1);
 % time horizon
-h = size(x{1},2)-1;
+h = size(u{1},2);
 
 if strcmp(formula.type, 'tp')
     formula.args = {formula};

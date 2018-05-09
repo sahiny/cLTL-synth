@@ -1,14 +1,14 @@
 function [fFGI,phi] = getFGInner(formula, k)
 
 
-global x Z ZLoop;
+global u x Z ZLoop tau;
 
 % number of agents
 N = length(x);
 % number of states
 dx = size(x{1},1);
 % time horizon
-h = size(x{1},2)-1;
+h = size(u{1},2);
 
 if strcmp(formula.type, 'ap')
     formula.args = {formula};

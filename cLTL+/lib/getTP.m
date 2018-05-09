@@ -10,7 +10,7 @@ end
 % number of agents
 N = length(W);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
 
 [fTP, z] = getLTL(args{1},k);
 phi = getZ(formula,h,1);

@@ -30,7 +30,7 @@ if m > 1
     phi = getZ(formula.formula,k,N);
     % conjunction constraint
     for n = 1:N
-        fAnd = [fAnd, repmat(phi,m,1)<=z(:,n), phi(n)>=1-m+sum(z(:,n))];
+        fAnd = [fAnd, repmat(phi(n),m,1)<=z(:,n), phi(n)>=1-m+sum(z(:,n))];
     end
 else
     phi = z;

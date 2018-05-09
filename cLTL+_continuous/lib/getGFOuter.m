@@ -1,6 +1,6 @@
 function [fGF,phi] = getGFOuter(formula, args, k)
 
-global x u Z zLoop ZLoop bigM epsilon;
+global x u Z zLoop ZLoop bigM col_radius tau;
 
 if length(args)>1
     disp('GF takes a single argument')
@@ -12,7 +12,7 @@ N = length(x);
 % number of states
 I = size(x{1},1);
 % time horizon
-h = size(x{1},2)-1;
+h = size(u{1},2);
 
 z = [];
 fGF = [];
@@ -28,7 +28,9 @@ for k = 1:h
     z = [z;zk];
     fGF = [fGF, fLTL];
     % zAnd_k = And(z_k,ZLoop_k)
-    fGF = [fGF, zAnd(k)<=z(k), zAnd(k)<=ZLoop(k), zAnd(k)>=ZLoop(k)+z(k)-1];
+    if k <= h
+        fGF = [fGF, zAnd(k)<=z(k), zAnd(k)<=ZLoop(k), zAnd(k)>=ZLoop(k)+z(k)-1];
+    end
 end
 
 phi = getZ(formula.formula,1,1);

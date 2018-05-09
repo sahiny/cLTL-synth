@@ -1,11 +1,11 @@
 function [fAnd,phi] = getAndI(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 
 % number of agents
 N = length(W);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-tau-1;
 
 % m*N binvar: a binary variable for each argument and agent 
 z = [];
@@ -25,7 +25,7 @@ for i=1:m
     else % if argument is atomic proposition
         % states
         wi = args{i};
-        ztemp = getZ(args{i},h,N);
+        ztemp = getZ(args{i},h+tau,N);
         z = [z; ztemp(k,:)];
         for n = 1:N
             fAnd = [fAnd, sum(W{n}(wi,k))>=1+epsilon-bigM*(1-z(end,n))];

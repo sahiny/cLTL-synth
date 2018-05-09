@@ -1,6 +1,6 @@
 function [fGG,phi] = getGG(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau;
 
 if length(args)>1
     disp('GG takes a single argument');
@@ -12,7 +12,7 @@ N = length(W);
 % number of states
 I = size(W{1},1);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
 
 fGG = [];
 z = [];

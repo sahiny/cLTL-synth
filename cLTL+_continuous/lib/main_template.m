@@ -1,5 +1,5 @@
 function [x, u, Z, sol, zLoop] = main_template(...
-    formula, A, B, Px, Pu, h, X0, Obs, CA_flag, epsilon)
+    formula, A, B, Px, Pu, h, X0, Obs, CA_flag, col_radius, tau)
 % x(t+1) = A*x(t) + B*u(t)
 % A = dx*dx matrix
 % b = dx*du matrix
@@ -18,43 +18,38 @@ assert(h>0, 'Trajectory must be greater than 0');
 
 tos = tic;
 
-global x  u Z zLoop ZLoop bigM;
+w = warning('off', 'all');
+global x  u Z zLoop ZLoop bigM col_radius tau;
+w = warning('on', 'all');
 
-epsilon = 0.1
 % Number of agents
 N = size(X0,2);
 
 % bigM notation
-bigM = 1000;
+bigM = 10;
 
 % number of states/ inputs
 dx = size(A,1);
 du = size(B,2);
 
-% states
-x = cell(1,N);
-
-% Initial conditions
-for n = 1:N
-    x{n}(:,1) = X0(:,n);
-end
-fInit = [];
-
-% Control input u^i(t) = U{i}{t} - vector of dimension du
+% Control input u^i(t) = u{i}{t} - vector of dimension du
 u = sdpvar(repmat(du,1,N),repmat(h,1,N),'full');
 
+% states x^i(t) = x{i}(:,t)
+x = initialize_x(X0);
+fInit = [];
 % System dynamics constraint
 fDyn = getDyn(A, B, X0, Px, Pu);
 
 % Obstacle Avoidence Constraint
-[fObs,zObs] = getObs(Obs, epsilon);
+[fObs,zObs] = getObs(Obs, col_radius);
 
 % Loop constraint
 fLoop= getLoop();
 
 % Collision Avoidence Constraint ??
 if CA_flag
-    [fCol, zCol] = getCol(epsilon);
+    [fCol, zCol] = getColTau(col_radius);
 else 
     fCol = [];
 end
@@ -80,6 +75,8 @@ disp(['    Total number of optimization variables : ', num2str(length(depends(F)
 % Solve the optimization problem
 %H = -epsilon; % maximize epsilon
 options = sdpsettings('verbose',8,'solver','gurobi');
+options.gurobi.Heuristics = 0.8;
+options.gurobi.MIPFocus = 1;
 disp('Solving MILP...')
 tms=tic;
 sol = optimize(F,[],options);

@@ -1,6 +1,6 @@
 function [fFG,phi] = getFGOuter(formula, args, k)
 
-global x u Z zLoop ZLoop bigM epsilon;
+global x u Z zLoop ZLoop bigM epsilon tau;
 
 if length(args)>1
     disp('GF takes a single argument')
@@ -12,7 +12,7 @@ N = length(x);
 % number of states
 I = size(x{1},1);
 % time horizon
-h = size(x{1},2)-1;
+h = size(u{1},2);
 
 z = [];
 fFG = [];

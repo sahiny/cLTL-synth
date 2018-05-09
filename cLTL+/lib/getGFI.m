@@ -1,9 +1,9 @@
 function [fGFI,phi] = getGFI(formula, args, k)
 
-global W Wtotal Z ZLoop;
+global W Wtotal Z ZLoop tau;
 
 if length(args)>1
-    disp('GG takes a single argument');
+    disp('GF takes a single argument');
     asset(length(args)==1);
 end
 
@@ -12,7 +12,8 @@ N = length(W);
 % number of states
 I = size(W{1},1);
 % time horizon
-h = size(W{1},2)-1;
+h = size(W{1},2)-1-tau;
+
 
 ZAnd = [];
 z = [];

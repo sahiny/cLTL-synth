@@ -1,4 +1,4 @@
-function [fAP,phi] = getAP(formula,k)
+function [fAP,phi] = getAP(formula,k, S)
 
 global x Z zLoop ZLoop bigM;
 
@@ -11,10 +11,11 @@ A = formula.A;
 b = formula.b;
 m = size(A,1);
 
+
 phi = getZ(formula.formula,k,N);
 zAP = [];
 fAP = [];
-for n = 1:N
+for n = S
     xk = x{n}(:,k);
     ztemp = getZ(strcat('~',formula.formula,'[',num2str(n),']'),k,m);
     zAP = [zAP;ztemp];

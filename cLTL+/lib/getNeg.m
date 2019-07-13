@@ -1,6 +1,6 @@
 function [fNeg,phi] = getNeg(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon tau;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau Fnum;
 
 if length(args)>1
     disp('Negation takes a single argument');
@@ -23,3 +23,4 @@ phi = phi(k);
 
 % Negation constaint
 fNeg = [fNeg, phi == 1-z];
+Fnum = Fnum + 1;

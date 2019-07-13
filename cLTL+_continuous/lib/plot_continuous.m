@@ -1,8 +1,8 @@
-function plot_continuous_robotarium(x,Z, zLoop)
+function plot_continuous(x,Z, zLoop)
 h = size(x{1},2)-1;
 N = length(x);
 cmap = jet(N);
-fps = 5;
+fps = 1;
 
 loopBegins = find(zLoop(:)==1,1);
 
@@ -21,14 +21,27 @@ ap_cell = {};
 % narrow passage
 [ap_narrow, ap_cell] = AP([eye(2); -eye(2)],[7; 8; -3; -7], ap_cell);
 
+% passage ends
+[ap_narrow11, ap_cell] = AP([eye(2); -eye(2)],[3; 9; -2; -8], ap_cell);
+[ap_narrow12, ap_cell] = AP([eye(2); -eye(2)],[3; 7; -2; -6], ap_cell);
+[ap_narrow21, ap_cell] = AP([eye(2); -eye(2)],[8; 9; -7; -8], ap_cell);
+[ap_narrow22, ap_cell] = AP([eye(2); -eye(2)],[8; 7; -7; -6], ap_cell);
+
+
 % Region A
 [ap_A, ap_cell] = AP([eye(2); -eye(2)],[3; 10; 0; -5], ap_cell);
 
 % Region C
-[ap_C, ap_cell] = AP([eye(2); -eye(2)],[10; 10; 0; -5], ap_cell);
+[ap_C, ap_cell] = AP([eye(2); -eye(2)],[10; 10; -7; -5], ap_cell);
 
 % Region E
-[ap_E, ap_cell] = AP([eye(2); -eye(2)],[10; 5; 0; 0], ap_cell);
+% [ap_E, ap_cell] = AP([eye(2); -eye(2)],[10; 5; 0; 0], ap_cell);
+
+% Region F
+[ap_F1, ap_cell] = AP([eye(2); -eye(2)],[2; 2; 0; 0], ap_cell);
+[ap_F2, ap_cell] = AP([eye(2); -eye(2)],[2; 10; 0; -8], ap_cell);
+[ap_F3, ap_cell] = AP([eye(2); -eye(2)],[10; 10; -8; -8], ap_cell);
+
 
 % Obstacles
 Obs1 = Polytope([eye(2); -eye(2)], [8; 3; -6; -1]);
@@ -44,9 +57,16 @@ for k = 1:2*h
         plot(Polyhedron(ap_A.A,ap_A.b), 'color', 'gray');
         plot(Polyhedron(ap_C.A,ap_C.b), 'color', 'gray');
         plot(Polyhedron(ap_narrow.A,ap_narrow.b), 'color', 'gray');
+        plot(Polyhedron(ap_narrow11.A,ap_narrow11.b), 'color', 'gray');
+        plot(Polyhedron(ap_narrow12.A,ap_narrow12.b), 'color', 'gray');
+        plot(Polyhedron(ap_narrow21.A,ap_narrow21.b), 'color', 'gray');
+        plot(Polyhedron(ap_narrow22.A,ap_narrow22.b), 'color', 'gray');
         plot(Polyhedron(Obs(1).A,Obs(1).b), 'color', 'black');
         plot(Polyhedron(Obs(2).A,Obs(2).b), 'color', 'black');
         plot(Polyhedron(Obs(3).A,Obs(3).b), 'color', 'black');
+        plot(Polyhedron(ap_F1.A,ap_F1.b), 'color', 'gray');
+        plot(Polyhedron(ap_F2.A,ap_F2.b), 'color', 'gray');
+        plot(Polyhedron(ap_F3.A,ap_F3.b), 'color', 'gray');
         poses = zeros(2,N);
         for n = 1:N
             xx = x{n}(1,t) * (fps+1-tt)/fps + x{n}(1,t+1) * (tt-1)/fps;
@@ -65,7 +85,7 @@ for k = 1:2*h
             end
         end
         min_dist
-        assert(min(min_dist)>=0.6, 'Minimum dist violation');
+%        assert(min(min_dist)>=0.6, 'Minimum dist violation');
         pause(.01);
         hold off
     end

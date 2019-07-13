@@ -1,6 +1,6 @@
 function fDyn = getDyn(A,CA_flag)
 % returns dynamical constraints
-global W tau;
+global W tau Fnum;
 % number of agents
 N = length(W);
 % number of states
@@ -11,6 +11,7 @@ h = size(W{1},2)-1-tau;
 fDyn = [];
 for n = 1:N
     fDyn = [fDyn, sum(W{n}) == ones(1,h+1+tau)];
+    Fnum = Fnum + h+1+tau;
     others = find([1:N]~=n);
     for i = 2:h+1
         wnext = W{n}(:,i);
@@ -18,10 +19,12 @@ for n = 1:N
         %fDyn = [fDyn, sos1(wnext,ones(I,1))];
         % move according to adj matrix
         fDyn = [fDyn, wnext <= A*wcurrent];
+        Fnum = Fnum + length(wnext);
         if CA_flag
             for other = 1:N-1
                 wother_current = W{others(other)}(:,i-1);
                 fDyn = [fDyn, wnext <= ones(size(I))-wother_current];
+                Fnum = Fnum + length(wnext);
             end
         end
         % conservation of mass

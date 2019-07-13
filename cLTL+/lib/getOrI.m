@@ -40,7 +40,7 @@ if m > 1
     % Robust version
     %phi = getZ(strcat('Robust(', formula, ')'),h,N);    % disjunction constraint
     for n = 1:N
-        fOr = [fOr, repmat(phi(k,n),m,1)>=z(:,n), phi(k,n)<=+sum(z(:,n))];
+        fOr = [fOr, repmat(phi(k,n),m,1)>=z(:,n), phi(k,n)<=sum(z(:,n))];
     end
 else
     phi = z;

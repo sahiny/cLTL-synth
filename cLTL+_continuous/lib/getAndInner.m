@@ -1,4 +1,4 @@
-function [fAnd,phi] = getAndInner(formula,k)
+function [fAnd,phi] = getAndInner(formula,k, S)
 
 global x Z zLoop ZLoop bigM;
 
@@ -29,7 +29,7 @@ if m > 1
     % a binary variable for each agent
     phi = getZ(formula.formula,k,N);
     % conjunction constraint
-    for n = 1:N
+    for n = S
         fAnd = [fAnd, repmat(phi(n),m,1)<=z(:,n), phi(n)>=1-m+sum(z(:,n))];
     end
 else

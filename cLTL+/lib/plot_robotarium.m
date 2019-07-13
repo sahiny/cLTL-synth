@@ -133,11 +133,11 @@ for i=1:length(T)
 		%occup(current_state) = occup(current_state) + 1;
 		plot(xpos, ypos, 'o', 'color', cmap(n,:), ...
 			'markersize', 5, 'MarkerFaceColor', cmap(n,:))
-		if current_state ~= traces(n, T(i)+1)
-			arrow_dest_x = xpos + (ind_to_pos_x(traces(n, T(i)+1))+ diff_(1) - xpos)*0.75;
-			arrow_dest_y = ypos + (ind_to_pos_y(traces(n, T(i)+1))+ diff_(2) - ypos)*0.75;
-			arrow([xpos, ypos], [arrow_dest_x, arrow_dest_y], 'length', 4, 'baseangle', 90, 'tipangle', 30, 'color', cmap(n,:));
-		end
+% 		if current_state ~= traces(n, T(i)+1)
+% 			arrow_dest_x = xpos + (ind_to_pos_x(traces(n, T(i)+1))+ diff_(1) - xpos)*0.75;
+% 			arrow_dest_y = ypos + (ind_to_pos_y(traces(n, T(i)+1))+ diff_(2) - ypos)*0.75;
+% 			arrow([xpos, ypos], [arrow_dest_x, arrow_dest_y], 'length', 4, 'baseangle', 90, 'tipangle', 30, 'color', cmap(n,:));
+% 		end
 	end
 	title(['$$t=', num2str(T(i)), '$$'],'Interpreter','latex')
 end

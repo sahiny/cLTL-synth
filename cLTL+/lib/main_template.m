@@ -1,11 +1,11 @@
 function [W, Wtotal, Z, mytimes, sol] = main_template(formula,A,h,W0,Obs,CA_flag)
-time = clock;
-disp([ 'Started at ', ...
-num2str(time(4)), ':',... % Returns year as character
-num2str(time(5)), ' on ',... % Returns month as character
-num2str(time(3)), '/',... % Returns day as char
-num2str(time(2)), '/',... % returns hour as char..
-num2str(time(1))]);
+% time = clock;
+% disp([ 'Started at ', ...
+% num2str(time(4)), ':',... % Returns year as character
+% num2str(time(5)), ' on ',... % Returns month as character
+% num2str(time(3)), '/',... % Returns day as char
+% num2str(time(2)), '/',... % returns hour as char..
+% num2str(time(1))]);
 
 if h==0
     disp('Trajectory must be greater than 0');
@@ -14,8 +14,10 @@ end
 
 tos = tic;
 
-global W Wtotal Z zLoop ZLoop bigM epsilon tau;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau Fnum;
 
+% number of constraints
+Fnum = 0;
 % Number of agents
 N = sum(W0);
 
@@ -55,7 +57,7 @@ end
 
 % Timing of other constraints
 toe = toc(tos);
-disp(['    Done with other constraints (',num2str(toe),') seconds'])
+% disp(['    Done with other constraints (',num2str(toe),') seconds'])
 
 % LTL constraint
 %disp('Creating LTL constraints...')
@@ -63,7 +65,7 @@ tltls=tic;
 Z = {};
 [fLTL,phi] = getLTL(formula,1);
 tltle=toc(tltls);
-disp(['    Done with LTL constraints (',num2str(tltle),') seconds'])
+% disp(['    Done with LTL constraints (',num2str(tltle),') seconds'])
 
 % All Constraints
 %F = [fInit, fDyn, fLoop, fObs, fLTL, phi==1];
@@ -72,11 +74,20 @@ F = [fInit, fDyn, fLoop, fLTL, phi==1, fCol];
 % if CA_flag
 %     F = [F fCol];
 % end
-disp(['    Total number of optimization variables : ', num2str(length(depends(F)))]);
-
+disp(['    Total number of variables : ', num2str(length(depends(F)))]);
+numF = 0; 
+for i = 1:length(F)
+    a = lmiinfo(F(i));
+    if ~isempty(a.equ) 
+        numF =  numF + a.equ(1)*a.equ(2);
+    else
+        numF =  numF + a.lin(1)*a.lin(2);
+    end
+end
+disp(['    Total number of constraints : ', num2str(numF)]);
 % Solve the optimization problem
 %H = -epsilon; % maximize epsilon
-options = sdpsettings('verbose',8,'solver','gurobi');
+options = sdpsettings('verbose',1,'solver','gurobi');
 options.gurobi.Heuristics = 0.5;
 options.gurobi.MIPFocus = 1;
 options.gurobi.Symmetry = 2;
@@ -104,7 +115,8 @@ if sol.problem == 0
         if ~isnan(Z{i}{1}) 
             1;
         else
-            disp(['#### Careful!! {',num2str(i), '} ', num2str(Z{i}{2}), ' is NaN']); 
+            1;
+%             disp(['#### Careful!! {',num2str(i), '} ', num2str(Z{i}{2}), ' is NaN']); 
         end
     end
     Wtotal = value(Wtotal);
@@ -115,8 +127,8 @@ if sol.problem == 0
 else
      W=0;W=0;WT=0;ZLoop=0;zLoop=0;LoopBegins=0;
      sol.solvertime = -1;
-     %sol.info
-     %yalmiperror(sol.problem)
+     sol.info
+     yalmiperror(sol.problem)
      %assert(0,'## No feasible solutions found! ##');
 end
 

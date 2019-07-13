@@ -2,15 +2,15 @@
 % close all;
 % %clc;
 
-function sol = emergency_example(N,h,tau,CA_flag)
+function sol = emergency_example(N,h,mytau,CA_flag)
 global W Wtotal Z zLoop ZLoop bigM epsilon tau;
-addpath(genpath('../'))
+% addpath(genpath('../'))
 
 % Time horizon
 %h = 30;
 % robustness number
 epsilon = 0;
-%tau = mytau;
+tau = mytau;
 %N = 10;
 % define a gridworld
 grid_size = [10, 10];

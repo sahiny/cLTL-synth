@@ -1,6 +1,6 @@
 function [fAnd,phi] = getAnd(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon tau;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau Fnum;
 
 % number of agents
 N = length(W);
@@ -31,6 +31,7 @@ if m > 1
     phi = phi(k);
     % conjunction constraint
     fAnd = [fAnd, repmat(phi,m,1)<=z, phi>=1-m+sum(z)];
+    Fnum = Fnum + m+1;
 else
     phi = z;
 end

@@ -1,6 +1,6 @@
 function [fAnd,phi] = getAndITau(formula,args,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon tau;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau Fnum;
 
 % number of agents
 N = length(W);
@@ -30,6 +30,7 @@ for i=1:m
         for n = 1:N
             fAnd = [fAnd, sum(W{n}(wi,k))>=1+epsilon-bigM*(1-z(end,n))];
             fAnd = [fAnd, sum(W{n}(wi,k))<=1-epsilon+bigM*z(end,n)-1];
+            Fnum = Fnum + 2;
         end
     end
 end

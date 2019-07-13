@@ -1,6 +1,6 @@
 function [fLTL,phi] = getLTL(formula,k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon tau;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau Fnum;
 
 [Op,args] = parseLTL(formula);
 
@@ -43,6 +43,8 @@ switch Op
         [fLTL,phi] = getGFI(formula,args,k);
     case 'TP'
         [fLTL,phi] = getTPTau(formula,args,k);
+    case 'TPE'
+        [fLTL,phi] = getTPExtensionTau(formula,args,k);    
     otherwise
         disp('wrong formula');
 end

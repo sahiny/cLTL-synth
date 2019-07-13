@@ -1,6 +1,6 @@
 function fCol = getCol()
 % returns collision avoidance constraints
-global W Wtotal;
+global W Wtotal Fnum;
 % number of agents
 N = length(W);
 % number of states
@@ -19,3 +19,4 @@ for i = 1:h+1
 end
 
 fCol = Wtotal(:) <= ones(I*(h+1),1);
+Fnum = Fnum + I*(h+1);

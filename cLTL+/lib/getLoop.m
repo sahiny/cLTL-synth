@@ -1,6 +1,6 @@
 function fLoop= getLoop()
 % returns loop constraints
-global W bigM zLoop ZLoop tau;
+global W bigM zLoop ZLoop tau Fnum;
 % number of agents
 N = length(W);
 % number of states
@@ -21,8 +21,9 @@ for k = 0:tau
         for i = 1+k:h
             fLoop = [fLoop, W{n}(:,h+1+k) <= W{n}(:,i) + bigM*(1-zLoop(i-k))*ones(I,1)];
             fLoop = [fLoop, W{n}(:,h+1+k) >= W{n}(:,i) - bigM*(1-zLoop(i-k))*ones(I,1)];
+            Fnum = Fnum + 2*I;
         end
     end
 end
     ZLoop = cumsum(zLoop);
-
+    Fnum = Fnum + h;

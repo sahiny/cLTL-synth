@@ -1,31 +1,33 @@
-function [fLTL,phi] = getLTL(formula,k)
+function [fLTL,phi] = getLTL(formula,k, varargin)
 
 global x u Z zLoop ZLoop bigM epsilon tau;
 
+
 if strcmp(formula.type,'inner')
+    S = varargin{1};
     switch formula.Op
         case 'AP'
-            [fLTL,phi] = getAP(formula,k);
+            [fLTL,phi] = getAP(formula,k, S);
         case 'And'
-            [fLTL,phi] = getAndInner(formula,k);
+            [fLTL,phi] = getAndInner(formula,k, S);
         case 'Or'
-            [fLTL,phi] = getOrInner(formula,k);
+            [fLTL,phi] = getOrInner(formula,k, S);
         case 'Neg'
-            [fLTL,phi] = getNegInner(formula,k);
+            [fLTL,phi] = getNegInner(formula,k, S);
         case 'U'
-            [fLTL,phi] = getUInner(formula,k);
+            [fLTL,phi] = getUInner(formula,k, S);
         case 'F'
-            [fLTL,phi] = getFInner(formula,k);
+            [fLTL,phi] = getFInner(formula,k, S);
         case 'G'
-            [fLTL,phi] = getGInner(formula,k);
+            [fLTL,phi] = getGInner(formula,k, S);
         case 'FF'
-            [fLTL,phi] = getFFInner(formula,k);
+            [fLTL,phi] = getFFInner(formula,k, S);
         case 'FG'
-            [fLTL,phi] = getFGInner(formula,k);
+            [fLTL,phi] = getFGInner(formula,k, S);
         case 'GF'
-            [fLTL,phi] = getGFInner(formula,k);
+            [fLTL,phi] = getGFInner(formula,k, S);
         case 'GG'
-            [fLTL,phi] = getGGInner(formula,k);
+            [fLTL,phi] = getGGInner(formula,k, S);
         otherwise
             disp('wrong formula');
     end

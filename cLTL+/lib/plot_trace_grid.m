@@ -1,8 +1,8 @@
 clear all
-%filename = './data/GOBLUE_40horizon_2tau_2017_3_20_21h32m';
+filename = 'until_extension_N4_h35_tau0_CA1_2019_6_25_21h16m.mat';
 load(filename)
 %Mw = noSwapping(Mw);
-fps = 12;
+fps = 1;
 
 % % Loop closes at 10
 % 
@@ -61,36 +61,37 @@ clf;
 set(gca, 'LooseInset', get(gca,'TightInset'))
 
 % NO's gridworld
-grid_size = [10 10];
-grid = ones(grid_size);
+grid_size = size(mygrid);
+grid = mygrid;
 
-grid(1:5, 1:5) = 0.8;
-grid(1:5, 6:10) = 0.6;
-
-% narrow passage
-grid(3, 4:7) = 0.4;
-
-
-% Obstacles
-grid([1:2,4:5], 5:6) = 0;
-grid([2,4], [4,7]) = 0;
-%mygrid([1:2,4:5], 4:7) = 0;
-grid([8,9], [7,8]) = 0;
-
-% charging station
-grid(1:2,1:2) = 0.2;
-grid(1:2,9:10) = 0.2;
-grid(9:10,1:2) = 0.2;
-
-vis = zeros(size(grid)+2);
-vis(2:end-1,2:end-1)=grid;
-
+% grid(1:5, 1:5) = 0.8;
+% grid(1:5, 6:10) = 0.6;
+% 
+% % narrow passage
+% grid(3, 4:7) = 0.4;
+% 
+% 
+% % Obstacles
+% grid([1:2,4:5], 5:6) = 0;
+% grid([2,4], [4,7]) = 0;
+% %mygrid([1:2,4:5], 4:7) = 0;
+% grid([8,9], [7,8]) = 0;
+% 
+% % charging station
+% grid(1:2,1:2) = 0.2;
+% grid(1:2,9:10) = 0.2;
+% grid(9:10,1:2) = 0.2;
+% 
+% vis = zeros(size(grid)+2);
+% vis(2:end-1,2:end-1)=grid;
+% 
 T = 1:70;%[1 2 9 10 11 12 13 14 18 19 20 21];
 cmap = jet(N);
 pos_diff = [[0., 0.]; [0.3,0.3]; [0.3,-0.3]; [-0.3,-0.3]; [-0.3,0.3]];
-v = VideoWriter('newmovie.avi');
-v.FrameRate = 2*fps;
-open(v);
+
+% v = VideoWriter('newmovie.avi');
+% v.FrameRate = 2*fps;
+% open(v);
 %axis off
 %ha = tight_subplot(3,7, [0.05 0.01], [0.01 0.04], 0.01);
 for i=1:length(T)-1
@@ -126,12 +127,14 @@ for i=1:length(T)-1
 %             end
         end
         title(['$$t=', num2str((T(i)-1)+(f-1)/fps), '$$'],'Interpreter','latex')
+        drawnow
+        pause(0.1);
         hold off
-        filename2 = sprintf('/Users/ysahin/Dropbox/MultiAgent - LTL counting/Vfinal/plots/%s_%03d.png', 'Earthquake', (T(i)-1)*fps+f-1);
+%         filename2 = sprintf('/Users/ysahin/Dropbox/MultiAgent - LTL counting/Vfinal/plots/%s_%03d.png', 'Earthquake', (T(i)-1)*fps+f-1);
         %print(filename2, '-dpng');
-        frame = getframe;
-        writeVideo(v,frame);
+%         frame = getframe;
+%         writeVideo(v,frame);
     end
 end
-close(v)
+% close(v)
 %print -depsc traces.eps

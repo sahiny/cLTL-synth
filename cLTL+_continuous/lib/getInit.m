@@ -13,6 +13,7 @@ h = size(W{1},2)-1;
 X = cell(N,1);
 for n = 1:N
     X{n} = sdpvar(h,dx,'full');
+    X{n}(1,:) = X0(n,:)';
 end
 
 fInit = [];

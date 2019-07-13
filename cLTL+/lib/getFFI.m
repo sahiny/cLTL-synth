@@ -1,6 +1,6 @@
 function [fFF,phi] = getFFI(formula, args, k)
 
-global W Wtotal Z;
+global W Wtotal Z Fnum;
 
 if length(args)>1
     disp('GG takes a single argument');
@@ -29,6 +29,7 @@ Z{length(Z)+1} = {phi,formula};
 
 for n = 1:N
    fFF = [fFF, repmat(phi(n),m,1)>=z(:,n), phi<=sum(z(:,n))];
+   Fnum =  Fnum + m;
 end
 
     

@@ -1,6 +1,6 @@
 function [fFG,phi] = getFG(formula, args, k)
 
-global W Wtotal Z zLoop ZLoop bigM epsilon tau;
+global W Wtotal Z zLoop ZLoop bigM epsilon tau Fnum;
 
 if length(args)>1
     disp('GF takes a single argument')
@@ -27,10 +27,12 @@ for k = 1:h
     fFG = [fFG, fLTL];
     % Zi = And(zi,ZLoop)
     fFG = [fFG, zOr(k)>=z(k), zOr(k)>=1-ZLoop(k), zOr(k)<=1-ZLoop(k)+z(k)];
+    Fnum = Fnum + 3;
 end
 
 phi = getZ(formula,1,1);
 
 fFG = [fFG, repmat(phi,h,1)<=zOr, phi>=1-h+sum(zOr)];
+Fnum = Fnum + h+1;
 
     

@@ -4,7 +4,7 @@ global W Wtotal Z bigM tau zLoop;
 
 if length(args) ~= 2
     disp('Missing argument');
-    asset(length(args)==2);
+    assert(length(args)==2);
 end
 
 % number of agents

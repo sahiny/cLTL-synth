@@ -2,11 +2,11 @@ function [fOr,phi] = getOrOuter(formula,k)
 
 global x Z zLoop ZLoop bigM;
 % number of agents
-N = length(W);
+N = length(x);
 % number of states
-I = size(W{1},1);
+I = size(x{1},1);
 % time horizon
-h = size(W{1},2)-1;
+h = size(x{1},2)-1;
 
 % m*N binvar: a binary variable for each argument and agent 
 z = [];
@@ -26,7 +26,7 @@ end
 
 if m > 1
     % a binary variable
-    phi = getZ(formula,k,1);
+    phi = getZ(formula.formula,k,1);
     % conjunction constraint
     fOr = [fOr, repmat(phi,m,1)>=z, phi<=sum(z)];
 else

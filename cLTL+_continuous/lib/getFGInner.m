@@ -1,4 +1,4 @@
-function [fFGI,phi] = getFGInner(formula, k)
+function [fFGI,phi] = getFGInner(formula, k, S)
 
 
 global u x Z ZLoop tau;
@@ -21,16 +21,16 @@ fFGI = [];
 formulaOr = strcat('And(', formula.formula, ', (1-ZLoop))');
 ZOr = getZ(formulaOr,h,N);
 for k = 1:h
-    [fLTL,zLTL] = getLTL(formula.args{1}, k);
+    [fLTL,zLTL] = getLTL(formula.args{1}, k, S);
     z = [z;zLTL];
     fFGI = [fFGI, fLTL];
-    for n = 1:N  
+    for n = S 
         fFGI = [fFGI, ZOr(k,n)>=z(k,n), ZOr(k,n)>=1-ZLoop(k), ZOr(k,n)<=1-ZLoop(k)+z(k,n)];
     end
 end
 
 phi = getZ(formula.formula, 1, N);
 
-for n = 1:N
+for n = S
    fFGI = [fFGI, repmat(phi(n),h,1)<=ZOr(:,n), phi(n)>=1-h+sum(ZOr(:,n))];
 end

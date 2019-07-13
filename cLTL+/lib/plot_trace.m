@@ -1,7 +1,7 @@
 function plot_trace(filename,fps)
-filename = strcat('./data/',filename);
+filename = strcat('./Journal_data/',filename);
 load(filename)
-Mw = noSwapping(Mw);
+% Mw = noSwapping(Mw);
 [size1,size2] = size(mygrid);
 k = length(ZLoop);
 loopBegins = find(ZLoop(:)==1,1);
@@ -110,7 +110,7 @@ for i=1:length(T)
         end
         title(['$$t=', num2str(T(i)+(f-1)/fps), '$$'],'Interpreter','latex')
         hold off
-        filename2 = sprintf('./plots/%s_%03d.png', filename, f+fps*(i-1));
+%         filename2 = sprintf('./plots/%s_%03d.png', filename, f+fps*(i-1));
         %print(filename2, '-dpng');
     end
         Xpos = NXpos;

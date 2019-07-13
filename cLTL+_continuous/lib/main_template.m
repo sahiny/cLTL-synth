@@ -5,14 +5,14 @@ function [x, u, Z, sol, zLoop] = main_template(...
 % b = dx*du matrix
 % Obs = given as a list of convex polytopes
 % X0 = d*N matrix
-
-time = clock;
-disp([ 'Started at ', ...
-num2str(time(4)), ':',... % Returns year as character
-num2str(time(5)), ' on ',... % Returns month as character
-num2str(time(3)), '/',... % Returns day as char
-num2str(time(2)), '/',... % returns hour as char..
-num2str(time(1))]);
+% 
+% time = clock;
+% disp([ 'Started at ', ...
+% num2str(time(4)), ':',... % Returns year as character
+% num2str(time(5)), ' on ',... % Returns month as character
+% num2str(time(3)), '/',... % Returns day as char
+% num2str(time(2)), '/',... % returns hour as char..
+% num2str(time(1))]);
 
 assert(h>0, 'Trajectory must be greater than 0');
 
@@ -42,8 +42,8 @@ fInit = [];
 fDyn = getDyn(A, B, X0, Px, Pu);
 
 % Obstacle Avoidence Constraint
-[fObs,zObs] = getObs(Obs, col_radius);
-
+% [fObs,zObs] = getObs(Obs, col_radius);
+fObs = [];
 % Loop constraint
 fLoop= getLoop();
 
@@ -70,13 +70,26 @@ F = [fInit, fDyn, fLoop, fCol, fLTL, fObs, phi==1];
 %F = [fInit, fDyn, fLoop, fObs];
 %F = [fInit, fDyn, fLoop, fObs, x{1}(:,15) == zeros(6,1)];
 
-disp(['    Total number of optimization variables : ', num2str(length(depends(F)))]);
+disp(['    Total number of variables : ', num2str(length(depends(F)))]);
+
+
+numF = 0; 
+for i = 1:length(F)
+    a = lmiinfo(F(i));
+    if ~isempty(a.equ) 
+        numF =  numF + a.equ(1)*a.equ(2);
+    else
+        numF =  numF + a.lin(1)*a.lin(2);
+    end
+end
+disp(['    Total number of constraints : ', num2str(numF)]);
 
 % Solve the optimization problem
 %H = -epsilon; % maximize epsilon
 options = sdpsettings('verbose',8,'solver','gurobi');
-options.gurobi.Heuristics = 0.8;
+options.gurobi.Heuristics = 0.5;
 options.gurobi.MIPFocus = 1;
+options.gurobi.Symmetry = 2;
 disp('Solving MILP...')
 tms=tic;
 sol = optimize(F,[],options);
@@ -111,7 +124,7 @@ if sol.problem == 0
     ZLoop = value(ZLoop);
     LoopBegins = find(zLoop(:)==1);
 else
-     W=0;W=0;WT=0;ZLoop=0;zLoop=0;LoopBegins=0;
+     ZLoop=0;zLoop=0;LoopBegins=0;x=0;u=0;Z=0;
      display('## No feasible solutions found! ##');
      sol.info
      yalmiperror(sol.problem)
